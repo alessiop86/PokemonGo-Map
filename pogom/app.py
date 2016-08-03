@@ -11,6 +11,10 @@ from datetime import datetime
 from s2sphere import *
 from pogom.utils import get_args
 
+#from state import search_active_flag
+
+import __builtin__
+
 from . import config
 from .models import Pokemon, Gym, Pokestop, ScannedLocation
 
@@ -31,6 +35,19 @@ class Pogom(Flask):
         self.route("/mobile", methods=['GET'])(self.list_pokemon)
         self.route("/search_control", methods=['GET'])(self.get_search_control)
         self.route("/search_control", methods=['POST'])(self.post_search_control)
+        self.route("/turn_off_search",methods=['GET'])(self.turn_off_search)
+        self.route("/turn_on_search",methods=['GET'])(self.turn_on_search)
+
+    def turn_off_search(self):
+        #global search_active_flag
+        __builtin__.search_active_flag = False
+        return jsonify({'search':'off'})
+
+    def turn_on_search(self):
+        #global search_active_flag
+        __builtin__.search_active_flag = True
+        return jsonify({'search':'on'})
+
 
     def set_search_control(self, control):
         self.search_control = control

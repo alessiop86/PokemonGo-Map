@@ -6,6 +6,8 @@ import sys
 import logging
 import time
 
+import __builtin__
+
 # Moved here so logger is configured at load time
 logging.basicConfig(format='%(asctime)s [%(threadName)16s][%(module)14s][%(levelname)8s] %(message)s')
 log = logging.getLogger()
@@ -23,6 +25,10 @@ from pogom.models import init_database, create_tables, drop_tables, Pokemon, Pok
 
 from pogom.pgoapi.utilities import get_pos_by_name
 
+#from state import *
+
+#iglobal state.search_active_flag
+__builtin__.search_active_flag = True
 
 if __name__ == '__main__':
     args = get_args()

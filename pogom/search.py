@@ -31,6 +31,9 @@ from pgoapi.utilities import f2i, get_cellid
 from . import config
 from .models import parse_map
 
+#from state import search_active_flag
+import __builtin__
+
 log = logging.getLogger(__name__)
 
 TIMESTAMP = '\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000'
@@ -123,8 +126,14 @@ def search_overseer_thread(args, new_location_queue, pause_bit):
     # A place to track the current location
     current_location = False;
 
+#    global search_active_flag
+
+
     # The real work starts here but will halt on pause_bit.set()
     while True:
+        if __builtin__.search_active_flag == False:
+            time.sleep(1)
+            continue
 
         # paused; clear queue if needed, otherwise sleep and loop
         if pause_bit.is_set():
@@ -176,8 +185,15 @@ def search_worker_thread(args, account, search_items_queue, parse_lock):
     # Create the API instance this will use
     api = PGoApi()
 
+    global search_active_flag
+
     # The forever loop for the thread
     while True:
+
+        #print "search_active_flag=%s" % search_active_flag
+        if search_active_flag == False:
+            time.sleep(1)
+            continue
 
         # Grab the next thing to search (when available)
         step, step_location = search_items_queue.get()
