@@ -25,6 +25,7 @@ class Pogom(Flask):
         self.json_encoder = CustomJSONEncoder
         self.route("/", methods=['GET'])(self.fullmap)
         self.route("/raw_data", methods=['GET'])(self.raw_data)
+	self.route("/raw_data_micro", methods=['GET'])(self.raw_data_micro)
         self.route("/loc", methods=['GET'])(self.loc)
         self.route("/next_loc", methods=['POST'])(self.next_loc)
         self.route("/mobile", methods=['GET'])(self.list_pokemon)
@@ -81,8 +82,7 @@ class Pogom(Flask):
         if request.args.get('pokemon', 'true') == 'true':
             if request.args.get('ids'):
                 ids = [int(x) for x in request.args.get('ids').split(',')]
-                d['pokemons'] = Pokemon.get_active_by_id(ids, swLat, swLng,
-                                                         neLat, neLng)
+                d['pokemons'] = Pokemon.get_active_by_id(ids, swLat, swLng, neLat, neLng)
             else:
                 d['pokemons'] = Pokemon.get_active(swLat, swLng, neLat, neLng)
 
@@ -97,6 +97,29 @@ class Pogom(Flask):
                                                       neLng)
 
         return jsonify(d)
+
+    def raw_data_micro(self):
+        d = {}
+        swLat = request.args.get('swLat')
+        swLng = request.args.get('swLng')
+        neLat = request.args.get('neLat')
+        neLng = request.args.get('neLng')
+        if request.args.get('pokemon', 'true') == 'true':
+            if request.args.get('ids'):
+                ids = [int(x) for x in request.args.get('ids').split(',')]
+#disabled at the moment, mvp
+#                d['pokemons'] = Pokemon.get_active_by_id(ids, swLat, swLng,neLat, neLng)
+            else:
+                d['pokemons'] = Pokemon.get_active(swLat, swLng, neLat, neLng)
+		
+	for pokemon in d['pokemons']:
+		del pokemon['encounter_id']
+		del pokemon['pokemon_name']
+		del pokemon['pokemon_rarity']
+		del pokemon['pokemon_types']
+		del pokemon['spawnpoint_id']
+	
+	return jsonify(d)
 
     def loc(self):
         d = {}
